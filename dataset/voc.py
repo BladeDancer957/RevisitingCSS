@@ -54,7 +54,7 @@ class VOCSegmentation(data.Dataset):
 
         self.image_set = image_set
         voc_root = self.root
-        splits_dir = os.path.join(voc_root, 'list')
+        splits_dir = os.path.join(voc_root, 'splits')
 
         if not os.path.isdir(voc_root):
             raise RuntimeError(
@@ -83,8 +83,7 @@ class VOCSegmentation(data.Dataset):
         # REMOVE FIRST SLASH OTHERWISE THE JOIN WILL start from root
         self.images = [
             (
-                os.path.join(voc_root, "VOCdevkit/VOC2012",
-                             x[0][1:]), os.path.join(voc_root, x[1][1:])
+                os.path.join(voc_root, x[0][1:]), os.path.join(voc_root, x[1][1:])
             ) for x in file_names
         ]
 

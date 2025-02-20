@@ -3,3 +3,10 @@ checkpoints
 data
 logs
 # results/
+
+*.csv
+scripts_old/
+checkpoints_old/
+logs_old/
+changed/
+*.log

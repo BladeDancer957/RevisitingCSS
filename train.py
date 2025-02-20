@@ -27,9 +27,9 @@ from utils.loss import (NCA, BCESigmoid, BCEWithLogitsLossWithIgnoreIndex,
 import copy
 
 
-from pytorch_grad_cam import GradCAM 
+# from pytorch_grad_cam import GradCAM 
 from PIL import Image 
-from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image 
+# from pytorch_grad_cam.utils.image import show_cam_on_image, preprocess_image 
 import numpy as np
 
 
@@ -55,6 +55,7 @@ class Trainer:
 
     def __init__(self, model, model_old, device, opts, trainer_state=None, classes=None, step=0):
         self.fix_pre_cls = opts.fix_pre_cls
+        self.fix_bachbone = opts.fix_bachbone
         self.use_cosine = opts.cosine
         self.model_old = model_old
         self.model = model
@@ -419,15 +420,23 @@ class Trainer:
         train_loader.sampler.set_epoch(cur_epoch)
 
         model.train()
-        if self.fix_pre_cls is True:
-            for i in range(len(model.module.cls)):
-                if i != len(model.module.cls) - 1:
-                    if not self.use_cosine:
-                        for p in model.module.cls[i].parameters():
-                            p.requires_grad = False
-                        model.module.cls[i].eval()
-                    elif self.use_cosine:
-                        model.module.cls[i].requires_grad = False
+        if self.fix_pre_cls and self.step > 0:
+            for i in range(self.step):
+                if not self.use_cosine:
+                    for p in model.module.cls[i].parameters():
+                        p.requires_grad = False
+                    model.module.cls[i].eval()
+                elif self.use_cosine:
+                    model.module.cls[i].requires_grad = False
+                    model.module.cls[i].eval()
+        if self.fix_bachbone and self.step > 0:
+            for p in model.module.head.parameters():
+                p.requires_grad = False
+            model.module.head.eval()
+            for p in model.module.body.parameters():
+                p.requires_grad = False
+            model.module.body.eval()
+
         for cur_step, (images, labels) in enumerate(train_loader):
    
 

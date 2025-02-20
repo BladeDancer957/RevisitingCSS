@@ -21,7 +21,7 @@ from torch.nn.modules.utils import _pair
 from torch.nn.parameter import Parameter
 from models import swin
 
-def make_model(opts, classes=None):
+def make_model(opts, classes=None, all_tasks_classes=None):
     if opts.backbone == "resnet50":
         if opts.norm_act == 'iabn_sync':
             norm = partial(InPlaceABNSync, activation="leaky_relu", activation_param=.01, group=distributed.group.WORLD)
@@ -72,7 +72,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
             )
         else:
             model = SegmentationModule(body, head, head_channels, opts.num_classes, opts.fusion_mode)
@@ -124,7 +125,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
             )
         else:
             model = SegmentationModule(body, head, head_channels, opts.num_classes, opts.fusion_mode)
@@ -173,7 +175,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
                 )
     elif opts.backbone == 'setr_l':
         raise NotImplementedError #norm_cfg没有进行修改
@@ -211,7 +214,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
                 )
     elif opts.backbone == 'setr_b':
         # norm_cfg of the head should be modified
@@ -250,7 +254,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
                 )
         
     elif opts.backbone == 'swin_b':
@@ -303,7 +308,8 @@ def make_model(opts, classes=None):
                 use_cosine=opts.cosine,
                 disable_background=opts.disable_background,
                 only_base_weights=opts.base_weights,
-                opts=opts
+                opts=opts,
+                all_tasks_classes=all_tasks_classes
             )
         else:
             model = SegmentationModule(body, head, head_channels, opts.num_classes, opts.fusion_mode)
@@ -333,7 +339,8 @@ class IncrementalSegmentationModule(nn.Module):
         use_cosine=False,
         disable_background=False,
         only_base_weights=False,
-        opts=None
+        opts=None,
+        all_tasks_classes=None
     ):
         super(IncrementalSegmentationModule, self).__init__()
         self.body = body
@@ -354,7 +361,11 @@ class IncrementalSegmentationModule(nn.Module):
         if opts.dataset == "cityscapes_domain":
             classes = [opts.num_classes]
 
-        self.cls = nn.ModuleList([nn.Conv2d(head_channels, c, 1, bias=use_bias) for c in classes])
+        if opts.pre_allocate:
+            assert all_tasks_classes is not None
+            self.cls = nn.ModuleList([nn.Conv2d(head_channels, c, 1, bias=use_bias) for c in all_tasks_classes])
+        else:
+            self.cls = nn.ModuleList([nn.Conv2d(head_channels, c, 1, bias=use_bias) for c in classes])
         self.classes = classes
         self.head_channels = head_channels
         self.tot_classes = reduce(lambda a, b: a + b, self.classes)

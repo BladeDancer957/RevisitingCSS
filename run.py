@@ -257,15 +257,25 @@ def run_step(opts, world_size, rank, device):
     opts.inital_nb_classes = tasks.get_per_task_classes(opts.dataset, opts.task, opts.step)[0]
 
     step_checkpoint = None
-    model = make_model(opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step))
+    if opts.pre_allocate:
+        assert opts.task_num > 1
+        model = make_model(opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step), all_tasks_classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.task_num - 1))
+    else:
+        model = make_model(opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step))
     logger.info(f"[!] Model made with{'out' if opts.no_pretrained else ''} pre-trained")
 
     if opts.step == 0:  # if step 0, we don't need to instance the model_old
         model_old = None
     else:  # instance model_old
-        model_old = make_model(
-            opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step - 1)
-        )
+        if opts.pre_allocate:
+            assert opts.task_num > 1
+            model_old = make_model(
+                opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step - 1), all_tasks_classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.task_num - 1)
+            )
+        else:
+            model_old = make_model(
+                opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step - 1)
+            )
 
     if opts.fix_bn:
         model.fix_bn()
@@ -710,9 +720,15 @@ def run_step(opts, world_size, rank, device):
     if True: #TRAIN:
         # Always reloading model for now
         # https://github.com/arthurdouillard/CVPR2021_PLOP/issues/3
-        model = make_model(
-            opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step)
-        )
+        if opts.pre_allocate:
+            assert opts.task_num > 1
+            model = make_model(
+                opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step), all_tasks_classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.task_num - 1)
+            )
+        else:
+            model = make_model(
+                opts, classes=tasks.get_per_task_classes(opts.dataset, opts.task, opts.step)
+            )
         # Put the model on GPU
 
         # apex
