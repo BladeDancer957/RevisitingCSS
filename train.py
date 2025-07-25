@@ -436,6 +436,11 @@ class Trainer:
             for p in model.module.body.parameters():
                 p.requires_grad = False
             model.module.body.eval()
+        
+        # print the num of trainable parameters
+        trainable_params = filter(lambda p: p.requires_grad, model.parameters())
+        num_trainable_params = sum(p.numel() for p in trainable_params)
+        logger.info(f"Number of trainable parameters: {num_trainable_params}")
 
         for cur_step, (images, labels) in enumerate(train_loader):
    
