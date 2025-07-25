@@ -52,7 +52,15 @@ BATCH_SIZE=$((24 / NB_GPU))
 INITIAL_EPOCHS=30
 EPOCHS=30
 
+if [ -f /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_FT-FixBC-P-0.02_0.pth ]; then
+    echo "Task 0 checkpoint already exists, skipping ..."
+    cp /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_FT-FixBC-P-0.02_0.pth /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_${NAME}_0.pth
+    CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 0 --lr 0.02 --epochs ${INITIAL_EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --test
+else
+    echo "Task 0 checkpoint does not exist, running task 0 training ..."
 CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 0 --lr 0.02 --epochs ${INITIAL_EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} 
+fi
+
 mid=`date +%s`
 CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 1 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} 
 python3 average_csv.py ${RESULTSFILE}
