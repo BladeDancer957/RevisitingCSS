@@ -583,4 +583,5 @@ def get_argparser():
     parser.add_argument("--pre_allocate", default=False, action="store_true")
     parser.add_argument("--fix_bachbone", default=False, action="store_true")
     parser.add_argument("--task_num", type=int, default=-1)
+    parser.add_argument("--results_dir", type=str, default="results")
     return parser
