@@ -10,3 +10,9 @@ checkpoints_old/
 logs_old/
 changed/
 *.log
+*.npy
+*.svg
+*.tar
+*.pth
+*.png
+*.zip
