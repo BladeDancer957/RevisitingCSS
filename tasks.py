@@ -287,6 +287,24 @@ def get_task_labels(dataset, name, step):
     labels_old = [label for s in range(step) for label in task_dict[s]]
     return labels, labels_old, f'data/{dataset}/{name}'
 
+def get_task_labels_all(dataset, name, step):
+    if dataset == 'voc':
+        task_dict = tasks_voc[name]
+    elif dataset == 'ade':
+        task_dict = tasks_ade[name]
+    elif dataset == "cityscapes_domain":
+        task_dict = tasks_cityscapes_domain[name]
+    else:
+        raise NotImplementedError
+    assert step in task_dict.keys(), f"You should provide a valid step! [{step} is out of range]"
+
+    max_step = max(task_dict.keys())
+    all_labels = [label for s in range(max_step + 1) for label in task_dict[s]]
+    return all_labels
+    # labels = list(task_dict[step])
+    # labels_old = [label for s in range(step) for label in task_dict[s]]
+    # return labels, labels_old, f'data/{dataset}/{name}'
+
 
 def get_per_task_classes(dataset, name, step):
     if dataset == 'voc':
@@ -301,3 +319,14 @@ def get_per_task_classes(dataset, name, step):
 
     classes = [len(task_dict[s]) for s in range(step + 1)]
     return classes
+
+def get_task_dict(dataset, name):
+    if dataset == 'voc':
+        task_dict = tasks_voc[name]
+    elif dataset == 'ade':
+        task_dict = tasks_ade[name]
+    elif dataset == "cityscapes_domain":
+        task_dict = tasks_cityscapes_domain[name]
+    else:
+        raise NotImplementedError
+    return task_dict

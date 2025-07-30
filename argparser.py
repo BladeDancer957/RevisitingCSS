@@ -584,4 +584,6 @@ def get_argparser():
     parser.add_argument("--fix_bachbone", default=False, action="store_true")
     parser.add_argument("--task_num", type=int, default=-1)
     parser.add_argument("--results_dir", type=str, default="results")
+    parser.add_argument("--proto", default=False, action="store_true", help="Use proto or not")
+    # parser.add_argument("--feat_dim", type=float, default=2048, help="2048 for resnet101")
     return parser
