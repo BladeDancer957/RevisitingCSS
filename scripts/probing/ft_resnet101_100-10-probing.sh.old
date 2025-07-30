@@ -1,0 +1,42 @@
+#!/bin/bash
+set -e
+start=`date +%s`
+START_DATE=$(date '+%Y-%m-%d')
+
+DATA_ROOT=/data/Code/CSS/Rethinking/data
+
+DATASET=ade
+TASK=100-10-probing
+NAME=FT-FixB
+METHOD=FT 
+# relevant parameters are set here
+OPTIONS="--backbone resnet101 --checkpoint checkpoints/step/ --fix_bachbone"
+
+SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"
+
+FIRSTMODEL_0=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_0.pth
+FIRSTMODEL_1=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_1.pth
+FIRSTMODEL_2=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_2.pth
+FIRSTMODEL_3=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_3.pth
+FIRSTMODEL_4=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_4.pth
+FIRSTMODEL_5=/mnt/gpfs/renyong/CSS/checkpoints/step/100-10-${DATASET}_FT-0.001_5.pth
+
+EPOCHS=30
+
+mkdir -p shell_logs_probing
+
+CUDA_VISIBLE_DEVICES=0 nohup python3 -m torch.distributed.launch --master_port 11000 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 0 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_00.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=1 nohup python3 -m torch.distributed.launch --master_port 11010 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 1 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_0} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_0.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=2 nohup python3 -m torch.distributed.launch --master_port 11020 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 2 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_1} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_1.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=3 nohup python3 -m torch.distributed.launch --master_port 11030 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 3 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_2} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_2.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=4 nohup python3 -m torch.distributed.launch --master_port 11040 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 4 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_3} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_3.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=5 nohup python3 -m torch.distributed.launch --master_port 11050 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 5 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_4} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_4.log 2>&1 &
+sleep 1
+CUDA_VISIBLE_DEVICES=6 nohup python3 -m torch.distributed.launch --master_port 11060 --nproc_per_node=${NB_GPU} run_probing.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 6 --lr 0.001 --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --step_ckpt ${FIRSTMODEL_5} > shell_logs_probing/$(date +"%Y%m%d_%H%M%S")_${DATASET}_ft_resnet101_${TASK}_5.log 2>&1 &
+
+echo ${SCREENNAME}

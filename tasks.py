@@ -1,4 +1,27 @@
 tasks_voc = {
+    "10-1-probing": {
+        0: list(range(21)),
+        1: list(range(21)),
+        2: list(range(21)),
+        3: list(range(21)),
+        4: list(range(21)),
+        5: list(range(21)),
+        6: list(range(21)),
+        7: list(range(21)),
+        8: list(range(21)),
+        9: list(range(21)),
+        10: list(range(21)),
+        11: list(range(21))
+    },
+    "15-5s-probing": {
+        0: list(range(21)),
+        1: list(range(21)),
+        2: list(range(21)),
+        3: list(range(21)),
+        4: list(range(21)),
+        5: list(range(21)),
+        6: list(range(21))
+    },
     "offline": {
         0: list(range(21)),
     },
@@ -183,6 +206,29 @@ tasks_cityscapes_domain = {
 }
 
 tasks_ade = {
+    "100-5-probing": {
+        0: [x for x in range(0, 151)],
+        1: [x for x in range(0, 151)],
+        2: [x for x in range(0, 151)],
+        3: [x for x in range(0, 151)],
+        4: [x for x in range(0, 151)],
+        5: [x for x in range(0, 151)],
+        6: [x for x in range(0, 151)],
+        7: [x for x in range(0, 151)],
+        8: [x for x in range(0, 151)],
+        9: [x for x in range(0, 151)],
+        10: [x for x in range(0, 151)],
+        11: [x for x in range(0, 151)]
+    },
+    "100-10-probing": {
+        0: [x for x in range(0, 151)],
+        1: [x for x in range(0, 151)],
+        2: [x for x in range(0, 151)],
+        3: [x for x in range(0, 151)],
+        4: [x for x in range(0, 151)],
+        5: [x for x in range(0, 151)],
+        6: [x for x in range(0, 151)]
+    },
     "offline": {
         0: [x for x in range(151)]
     },
