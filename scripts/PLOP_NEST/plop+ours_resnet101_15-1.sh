@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -e
+
+start=`date +%s`
+
+START_DATE=$(date '+%Y-%m-%d')
+
+PORT=$((9000 + RANDOM % 1000))
+
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <GPU> <NB_GPU>"
+    exit 1
+fi
+
+GPU=$1
+NB_GPU=$2
+LR=0.001
+
+DATA_ROOT=/data/Code/CSS/Rethinking/data/PascalVOC12
+
+DATASET=voc
+TASK=15-5s
+NAME=PLOP_NEST
+METHOD=FT 
+# relevant parameters are set here
+results_dir=results_plop_nest
+OPTIONS="--backbone resnet101 --warm_up --warm_epochs 5 --warm_lr_scale 1 --unce_in_warm --checkpoint checkpoints/step/ --fix_pre_cls --pod local --pod_factor 0.01 --pod_logits  --pseudo entropy --threshold 0.001 --classif_adaptive_factor --init_balanced --results_dir ${results_dir}"
+
+
+SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"
+
+RESULTSFILE=${results_dir}/${START_DATE}_${DATASET}_${TASK}_${NAME}.csv
+rm -f ${RESULTSFILE}
+
+echo -ne "\ek${SCREENNAME}\e\\"
+
+echo "Writing in ${RESULTSFILE}"
+
+BATCH_SIZE=$((24 / NB_GPU))
+INITIAL_EPOCHS=30
+EPOCHS=30
+
+
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 0 --lr 0.02 --epochs ${INITIAL_EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS}
+
+mid=`date +%s`
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 1 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --pod_options "{\"switch\": {\"after\": {\"extra_channels\": \"sum\", \"factor\": 0.0005, \"type\": \"local\"}}}"
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 2 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --pod_options "{\"switch\": {\"after\": {\"extra_channels\": \"sum\", \"factor\": 0.0005, \"type\": \"local\"}}}"
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 3 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --pod_options "{\"switch\": {\"after\": {\"extra_channels\": \"sum\", \"factor\": 0.0005, \"type\": \"local\"}}}"
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 4 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --pod_options "{\"switch\": {\"after\": {\"extra_channels\": \"sum\", \"factor\": 0.0005, \"type\": \"local\"}}}"
+CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 5 --lr ${LR} --epochs ${EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --pod_options "{\"switch\": {\"after\": {\"extra_channels\": \"sum\", \"factor\": 0.0005, \"type\": \"local\"}}}"
+python3 average_csv.py ${RESULTSFILE}
+
+echo ${SCREENNAME}
+
+
+end=`date +%s`
+runtime=$((end-start))
+echo "Run in ${runtime}s"
+
+runtime_continue_learning=$((end-mid))
+echo "Run continue learning in ${runtime_continue_learning}s"
