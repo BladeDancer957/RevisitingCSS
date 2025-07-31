@@ -57,7 +57,7 @@ for step in $(seq 0 $((NUM_STEPS - 1))); do
         "--batch_size" "${BATCH_SIZE}"
         "--backbone" "${BACKBONE}"
         "--checkpoint" "/mnt/gpfs/renyong/CSS/checkpoints_probing/step/"
-        "--fix_bachbone" # 注意：原始脚本中可能是拼写错误 (bachbone -> backbone)
+        "--fix_backbone" # 注意：原始脚本中可能是拼写错误 (bachbone -> backbone)
         "--opt_level" "O1"
         "--overlap"
         "--results_dir" "results_probing"

@@ -581,7 +581,7 @@ def get_argparser():
     parser.add_argument("--pod_coef", type=float, default=1.)
     parser.add_argument("--warm_lr_scale", type=float, default=1.)
     parser.add_argument("--pre_allocate", default=False, action="store_true")
-    parser.add_argument("--fix_bachbone", default=False, action="store_true")
+    parser.add_argument("--fix_backbone", default=False, action="store_true")
     parser.add_argument("--task_num", type=int, default=-1)
     parser.add_argument("--results_dir", type=str, default="results")
     parser.add_argument("--proto", default=False, action="store_true", help="Use proto or not")

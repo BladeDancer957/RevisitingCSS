@@ -24,7 +24,7 @@ TASK=15-5
 NAME=FT-FixB-${LR}
 METHOD=FT 
 # relevant parameters are set here
-OPTIONS="--backbone resnet101 --checkpoint /mnt/gpfs/renyong/CSS/checkpoints/step/ --fix_bachbone"
+OPTIONS="--backbone resnet101 --checkpoint /mnt/gpfs/renyong/CSS/checkpoints/step/ --fix_backbone"
 
 
 SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"

@@ -25,7 +25,7 @@ NAME=FT-SwinB-FixBC-P-${LR}
 METHOD=FT 
 # relevant parameters are set here
 results_dir=results_ep30_60
-OPTIONS="--backbone swin_b --checkpoint /mnt/gpfs/renyong/CSS/checkpoints_ep30_60/step/ --fix_bachbone --fix_pre_cls --pre_allocate --task_num 11 --results_dir ${results_dir}"
+OPTIONS="--backbone swin_b --checkpoint /mnt/gpfs/renyong/CSS/checkpoints_ep30_60/step/ --fix_backbone --fix_pre_cls --pre_allocate --task_num 11 --results_dir ${results_dir}"
 
 
 SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"

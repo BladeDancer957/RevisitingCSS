@@ -25,7 +25,7 @@ NAME=FT-FixBC-P-${LR}
 METHOD=FT 
 # relevant parameters are set here
 results_dir=results_ep60
-OPTIONS="--backbone resnet101 --checkpoint /mnt/gpfs/renyong/CSS/checkpoints_ep60/step/ --fix_bachbone --fix_pre_cls --pre_allocate --task_num 6 --results_dir ${results_dir}"
+OPTIONS="--backbone resnet101 --checkpoint /mnt/gpfs/renyong/CSS/checkpoints_ep60/step/ --fix_backbone --fix_pre_cls --pre_allocate --task_num 6 --results_dir ${results_dir}"
 
 
 SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"

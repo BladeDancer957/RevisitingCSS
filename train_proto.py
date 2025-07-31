@@ -56,7 +56,7 @@ class Trainer:
 
     def __init__(self, model, model_old, device, opts, trainer_state=None, classes=None, step=0):
         self.fix_pre_cls = opts.fix_pre_cls
-        self.fix_bachbone = opts.fix_bachbone
+        self.fix_backbone = opts.fix_backbone
         self.use_cosine = opts.cosine
         self.model_old = model_old
         self.model = model
@@ -439,8 +439,8 @@ class Trainer:
                 elif self.use_cosine:
                     model.module.cls[i].requires_grad = False
                     model.module.cls[i].eval()
-        # if self.fix_bachbone:  # for probing
-        if self.fix_bachbone and self.step > 0:
+        # if self.fix_backbone:  # for probing
+        if self.fix_backbone and self.step > 0:
             print(f"Fixing backbone for {self.step} steps")
             for p in model.module.head.parameters():
                 p.requires_grad = False

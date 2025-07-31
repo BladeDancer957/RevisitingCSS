@@ -24,7 +24,7 @@ TASK=100-5
 NAME=FT-SwinB-FixB-${LR}
 METHOD=FT 
 # relevant parameters are set here
-OPTIONS="--backbone swin_b --checkpoint /mnt/gpfs/renyong/CSS/checkpoints/step/ --fix_bachbone"
+OPTIONS="--backbone swin_b --checkpoint /mnt/gpfs/renyong/CSS/checkpoints/step/ --fix_backbone"
 
 
 SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"
