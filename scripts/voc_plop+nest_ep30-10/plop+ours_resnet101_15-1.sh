@@ -24,13 +24,14 @@ TASK=15-5s
 NAME=PLOP_NEST-${LR}
 METHOD=FT 
 # relevant parameters are set here
-OPTIONS="--backbone resnet101 --warm_up --warm_epochs 5 --warm_lr_scale 1 --unce_in_warm --checkpoint /mnt/gpfs/renyong/CSS/checkpoints/step/ --fix_pre_cls --pod local --pod_factor 0.01 --pod_logits  --pseudo entropy --threshold 0.001 --classif_adaptive_factor  --init_balanced"
+results_dir=results_ep30_10
+OPTIONS="--backbone resnet101 --warm_up --warm_epochs 5 --warm_lr_scale 1 --unce_in_warm --checkpoint /mnt/gpfs/renyong/CSS/checkpoints_ep30_10/step/ --fix_pre_cls --pod local --pod_factor 0.01 --pod_logits  --pseudo entropy --threshold 0.001 --classif_adaptive_factor --init_balanced --results_dir ${results_dir}"
 
 
 
 SCREENNAME="${DATASET}_${TASK}_${NAME} On GPUs ${GPU}"
 
-RESULTSFILE=results/${START_DATE}_${DATASET}_${TASK}_${NAME}.csv
+RESULTSFILE=${results_dir}/${START_DATE}_${DATASET}_${TASK}_${NAME}.csv
 rm -f ${RESULTSFILE}
 
 echo -ne "\ek${SCREENNAME}\e\\"
@@ -48,12 +49,12 @@ echo "Writing in ${RESULTSFILE}"
 
 BATCH_SIZE=$((24 / NB_GPU))
 INITIAL_EPOCHS=30
-EPOCHS=30
+EPOCHS=10
 
 # if [ -f /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_PLOP_NEST-0.001_0.pth ]; then
-if false; then
+if false; then # commented out to always run task 0
     echo "Task 0 checkpoint already exists, skipping ..."
-    cp /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_PLOP_NEST-0.001_0.pth /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_${NAME}_0.pth
+    cp /mnt/gpfs/renyong/CSS/checkpoints/step/${TASK}-${DATASET}_PLOP_NEST-0.001_0.pth /mnt/gpfs/renyong/CSS/checkpoints_ep30_10/step/${TASK}-${DATASET}_${NAME}_0.pth
     CUDA_VISIBLE_DEVICES=${GPU} python3 -m torch.distributed.launch --master_port ${PORT} --nproc_per_node=${NB_GPU} run.py --date ${START_DATE} --data_root ${DATA_ROOT} --overlap --batch_size ${BATCH_SIZE} --dataset ${DATASET} --name ${NAME} --task ${TASK} --step 0 --lr 0.02 --epochs ${INITIAL_EPOCHS} --method ${METHOD} --opt_level O1 ${OPTIONS} --test
 else
     echo "Task 0 checkpoint does not exist, running task 0 training ..."
