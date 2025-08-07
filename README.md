@@ -3,7 +3,7 @@
 
 <!-- ## 🔥🔥🔥 News!! -->
 ## 🔥 News ! 
-* Aug 1, 2025: 👋 We release the source code of paper: [Revisiting Continual Semantic Segmentation with Pre-trained Vision Models](https://arxiv.org/abs/). 
+* Aug 1, 2025: 👋 We release the source code of paper: [Revisiting Continual Semantic Segmentation with Pre-trained Vision Models](https://arxiv.org/abs/2508.04267). 
 
 ## 1. Introduction
 
@@ -31,7 +31,7 @@ Even under DFT, PVMs exhibit strong retention of previously acquired knowledge w
    
 - Our DFT* method achieves competitive or superior performance compared to sixteen SOTA CSS approaches. 
 Notably, DFT* requires only 30.3\%–45.6\% of the training time and 0.000271\%–0.033194\% of the trainable parameters. 
-<!-- (see [Evaluation](#evaluation) and the [Paper](https://arxiv.org/pdf/)) -->
+<!-- (see [Evaluation](#evaluation) and the [Paper](https://arxiv.org/pdf/2508.04267)) -->
 
 <div align="center">
   <img src="assert/prob.png" alt="Architecture" width="800" />
@@ -183,7 +183,15 @@ bash ./scripts/PLOP_NEST/plop+ours_swin_b_50-50.sh 6,7 2
 ## 3. Citation
 If our code and paper help you, please kindly cite:
 ```
-
+@misc{zhang2025revisitingcontinualsemanticsegmentation,
+      title={Revisiting Continual Semantic Segmentation with Pre-trained Vision Models}, 
+      author={Duzhen Zhang and Yong Ren and Wei Cong and Junhao Zheng and Qiaoyi Su and Shuncheng Jia and Zhong-Zhi Li and Xuanle Zhao and Ye Bai and Feilong Chen and Qi Tian and Tielin Zhang},
+      year={2025},
+      eprint={2508.04267},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2508.04267}, 
+}
 ```
 
 ## 4. Acknowledgement
